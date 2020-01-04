@@ -49,6 +49,8 @@ if __name__ == '__main__':
     img5 = cv2.imread('chk_imgs/03.png')
     img6 = cv2.imread('chk_imgs/04.png')
 
+    # compareImage: 數值 0.75 以上為相似
+    # compareImage2: 數值 0.70 以上為相似
     print(compareImage(img1, img2), compareImage2(img1, img2))
     print(compareImage(img1, img3), compareImage2(img1, img3))
     print(compareImage(img1, img4), compareImage2(img1, img4))
