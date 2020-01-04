@@ -1,6 +1,5 @@
 import subprocess
 import time
-import os
 
 import win32gui, win32ui, win32con, win32api
 from PIL import ImageGrab
@@ -16,10 +15,14 @@ class ADB:
         self.Screen_Size = Screen_Size
         self.Device_Name = Device_Name
 
+        # Store all windows name
+        self.windowsNames = set()
+
         # 找到模擬器視窗 => 指定雷電模擬器目錄(為了可以使用ldconsole list, ldconsole list2, 需要在模擬器目錄下才能正常執行)
         #self.LD_Path = r"D:\Changzhi\dnplayer-tw\\"
         self.LD_Path = LD_Path
 
+        self.Emulator = 'BlueStacks'
         self.Hwnd = 0  # 指定預設索引為0的模擬器
         self.ScreenHot = None  # 預設截圖為None
 
@@ -35,12 +38,16 @@ class ADB:
         print("hwnd:", self.Hwnd)
         # 持續執行 => 需加個delay 才不會卡住
         while 1:
-            self.window_capture(hwnd=self.Hwnd, filename=file_name)
+            #self.window_capture(hwnd=self.Hwnd, filename=file_name)
+            self.windowCapture(hwnd=self.Hwnd, filename=file_name)
             time.sleep(2)
 
     # 使用 ldconsole.exe 指令(function LD_Call) => 取得目前在運行中的模擬器 => 找到 綁定視窗的Hwnd
     # return 綁定視窗的Hwnd
     def Get_Self_Hawd(self, Index_Num):
+        if self.Emulator == 'BlueStacks':
+            return self.Get_BlueStacks_Hawd()
+
         Device_List = self.LD_Call()
         for k, Device_Data in enumerate(Device_List):
             if k != Index_Num:
@@ -48,6 +55,22 @@ class ADB:
             hawd = Device_Data[3]
             # print(hawd)
             return hawd
+
+    def checkWindow(self, hwnd, mouse):
+        # 去掉下面這句就所有都輸出了，但是我不需要那麼多
+        if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+            self.windowsNames.add(win32gui.GetWindowText(hwnd))
+
+    def Get_BlueStacks_Hawd(self):
+        parentHawd = win32gui.FindWindow(None, 'BlueStacks')
+        win32gui.EnumChildWindows(parentHawd, self.checkWindow, 0)
+        lt = [t for t in self.windowsNames if t]
+        lt.sort()
+        for t in lt:
+            hawd = win32gui.FindWindowEx(parentHawd, 0, None, t)
+            if hawd != 0:
+                return hawd
+
     # ldconsole list2 => 查看正在運行模擬器的資訊
     def LD_Call(self):
         File_Path = self.LD_Path + "ldconsole.exe"  # 此行ldconsole.exe 可能會因不同模擬器執行檔不同或取得方式不同
@@ -78,6 +101,31 @@ class ADB:
         self.ScreenHot = src_image
         # print(type(src_image))
 
+    # 載取遊戲畫面
+    def windowCapture(self, hwnd, filename):
+        # 根據視窗控制代碼獲取視窗的裝置上下文DC（Divice Context）
+        hwndDC = win32gui.GetWindowDC(hwnd)
+        # 根據視窗的DC獲取mfcDC
+        mfcDC = win32ui.CreateDCFromHandle(hwndDC)
+        # mfcDC建立可相容的DC
+        saveDC = mfcDC.CreateCompatibleDC()
+        # 建立bigmap準備儲存圖片
+        saveBitMap = win32ui.CreateBitmap()
+        # 獲取監控器資訊
+        MoniterDev = win32api.EnumDisplayMonitors(None, None)
+        w = MoniterDev[0][2][2]
+        h = MoniterDev[0][2][3]
+        print(w, h)  #圖片大小
+        # 為bitmap開闢空間
+        saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+        # 高度saveDC，將截圖儲存到saveBitmap中
+        saveDC.SelectObject(saveBitMap)
+        # 擷取從左上角（0，0）長寬為（w，h）的圖片
+        saveDC.BitBlt((0, 0), (w, h), mfcDC, (0, 0), win32con.SRCCOPY)
+        saveBitMap.SaveBitmapFile(saveDC, filename)
+        # 將截圖畫面存到adb物件本身的ScreenHot屬性
+        self.ScreenHot = saveDC
+
     # 對模擬器下達指令
     def Touch(self, x, y, name, device_name=None):
         if device_name == None:
@@ -100,7 +148,7 @@ class ADB:
 if __name__ == '__main__':
     Device_Name = "127.0.0.1:5555"
     #Device_Name = "emulator-5554"
-    Screen_Size = [960, 540]
+    Screen_Size = [1280, 720]
     ADB_Path = "vmTool/dnplayer_tw/adb.exe"
     LD_Path = r"D:\Changzhi\dnplayer-tw\\"
     obj = ADB(Device_Name=Device_Name, Screen_Size=Screen_Size, ADB_Path=ADB_Path, LD_Path=LD_Path)
@@ -115,8 +163,8 @@ if __name__ == '__main__':
     # print(hawd)
 
     # 取得模擬器資訊內的hawd => 載取整個遊戲畫面
-    #hawd = obj.Get_Self_Hawd(0)
-    #obj.window_capture(hawd, 'chk_imgs/test.png')
+    # hawd = obj.Get_Self_Hawd(0)
+    # obj.window_capture(hawd, 'chk_imgs/test.png')
 
     # 點擊遊戲畫面
-    #obj.Touch(35, 25, "點擊人物等級")
+    obj.Touch(35, 25, "點擊人物等級")
