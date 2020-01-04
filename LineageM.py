@@ -1,5 +1,8 @@
+# -*- coding: UTF-8 -*-
 import os
 import time
+import win32gui
+
 import adb
 
 class LM:
@@ -11,12 +14,16 @@ class LM:
         self.Btn_Map = {}
         self.Btn_init(Screen_Size)  # 依畫面大小設定座標點
 
+        # Store all windows name
+        self.windowsNames = set()
+
         # 初始化圖片位置
         self.Sample_Image = dict()
         self.Import_Sample_Image(Ck_Path)  # 導入所有樣本圖片檔(最後結果圖) => 並儲存到self.Sample_Image變數
 
         # 起動執行載圖動作的執行緒(呼叫ADB截圖函式)
         self.ADB.Keep_Game_ScreenHot(Emu_Index=0, file_name=Ck_Path+'/test.png')
+
         # 若截圖未處理完則進行等待
         while self.ADB.ScreenHot == None:
             print("等待ADB載入畫面...")
@@ -96,16 +103,29 @@ class LM:
         #    self.Click_System_Btn('PlayerState')
         #    time.sleep(3)
 
+    def checkWindow(self, hwnd, mouse):
+        # 去掉下面這句就所有都輸出了，但是我不需要那麼多
+        if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+            self.windowsNames.add(win32gui.GetWindowText(hwnd))
+
 if __name__ == '__main__':
     # obj = LM(Device_Name="emulator-5554", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img")
     # obj = LM(Device_Name="127.0.0.1:5555", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img", ADB_Path="xx", LD_Path="xx")
 
     Device_Name = "127.0.0.1:5555"
     # Device_Name = "emulator-5554"
-    Screen_Size = [960, 540]
+    Screen_Size = [1280, 720]
     ADB_Path = "vmTool/dnplayer_tw/adb.exe"
-    LD_Path = r"D:\Changzhi\dnplayer-tw\\"
+    LD_Path = r"C:\Program Files\BlueStacks\\"
     Ck_Path = "chk_imgs"
     obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, LD_Path=LD_Path)
 
+    # List all windows name
+    win32gui.EnumWindows(obj.checkWindow, 0)
+    lt = [t for t in obj.windowsNames if t]
+    lt.sort()
+    #for t in lt:
+        #print(t)
+
     obj.Click_System_Btn('PlayerState')
+
