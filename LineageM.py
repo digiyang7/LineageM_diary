@@ -121,11 +121,12 @@ if __name__ == '__main__':
     obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, LD_Path=LD_Path)
 
     # List all windows name
-    win32gui.EnumWindows(obj.checkWindow, 0)
+    parentHwnd = win32gui.FindWindow(None, 'BlueStacks')
+    win32gui.EnumChildWindows(parentHwnd, obj.checkWindow, 0)
     lt = [t for t in obj.windowsNames if t]
     lt.sort()
     #for t in lt:
-        #print(t)
+    #    print(win32gui.FindWindowEx(parentHwnd, 0, None, t), t)
 
     obj.Click_System_Btn('PlayerState')
 

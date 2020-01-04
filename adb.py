@@ -15,6 +15,9 @@ class ADB:
         self.Screen_Size = Screen_Size
         self.Device_Name = Device_Name
 
+        # Store all windows name
+        self.windowsNames = set()
+
         # 找到模擬器視窗 => 指定雷電模擬器目錄(為了可以使用ldconsole list, ldconsole list2, 需要在模擬器目錄下才能正常執行)
         #self.LD_Path = r"D:\Changzhi\dnplayer-tw\\"
         self.LD_Path = LD_Path
@@ -53,8 +56,20 @@ class ADB:
             # print(hawd)
             return hawd
 
+    def checkWindow(self, hwnd, mouse):
+        # 去掉下面這句就所有都輸出了，但是我不需要那麼多
+        if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+            self.windowsNames.add(win32gui.GetWindowText(hwnd))
+
     def Get_BlueStacks_Hawd(self):
-        return win32gui.FindWindow(None, 'BlueStacks')
+        parentHawd = win32gui.FindWindow(None, 'BlueStacks')
+        win32gui.EnumChildWindows(parentHawd, self.checkWindow, 0)
+        lt = [t for t in self.windowsNames if t]
+        lt.sort()
+        for t in lt:
+            hawd = win32gui.FindWindowEx(parentHawd, 0, None, t)
+            if hawd != 0:
+                return hawd
 
     # ldconsole list2 => 查看正在運行模擬器的資訊
     def LD_Call(self):
@@ -100,7 +115,7 @@ class ADB:
         MoniterDev = win32api.EnumDisplayMonitors(None, None)
         w = MoniterDev[0][2][2]
         h = MoniterDev[0][2][3]
-        #print(w, h)  #圖片大小
+        print(w, h)  #圖片大小
         # 為bitmap開闢空間
         saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
         # 高度saveDC，將截圖儲存到saveBitmap中
