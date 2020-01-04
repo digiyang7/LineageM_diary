@@ -1,11 +1,14 @@
 import os
 import time
+import win32gui
+
 import adb
 
 class LM:
-    def __init__(self, Device_Name, Screen_Size, Ck_Path, ADB_Path, LD_Path):
+    #def __init__(self, Device_Name, Screen_Size, Ck_Path, ADB_Path, Emulator, LD_Path):
+    def __init__(self, Device_Name, Screen_Size, Ck_Path, ADB_Path, Emulator):
         # 初始化ADB物件
-        self.ADB = adb.ADB(Device_Name=Device_Name, Screen_Size=Screen_Size, ADB_Path=ADB_Path, LD_Path=LD_Path)
+        self.ADB = adb.ADB(Device_Name=Device_Name, Screen_Size=Screen_Size, ADB_Path=ADB_Path, Emulator=Emulator)
 
         # 初始化按鈕位置
         self.Btn_Map = {}
@@ -17,6 +20,7 @@ class LM:
 
         # 起動執行載圖動作的執行緒(呼叫ADB截圖函式)
         self.ADB.Keep_Game_ScreenHot(Emu_Index=0, file_name=Ck_Path+'/test.png')
+
         # 若截圖未處理完則進行等待
         while self.ADB.ScreenHot == None:
             print("等待ADB載入畫面...")
@@ -91,21 +95,26 @@ class LM:
 
     # 自動轉日記本
     def autoDiary(self):
-        self.Click_System_Btn('PlayerState')
-        #while 1:
-        #    self.Click_System_Btn('PlayerState')
-        #    time.sleep(3)
+
+        while 1:
+            self.Click_System_Btn('PlayerState')
+            time.sleep(5)
 
 if __name__ == '__main__':
     # obj = LM(Device_Name="emulator-5554", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img")
     # obj = LM(Device_Name="127.0.0.1:5555", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img", ADB_Path="xx", LD_Path="xx")
 
-    Device_Name = "127.0.0.1:5555"
-    # Device_Name = "emulator-5554"
+    # Device_Name = "127.0.0.1:5555"
+    Device_Name = "emulator-5554"
     Screen_Size = [960, 540]
+    # Screen_Size = [1280, 720]
     ADB_Path = "vmTool/dnplayer_tw/adb.exe"
-    LD_Path = r"D:\Changzhi\dnplayer-tw\\"
+    #LD_Path = r"D:\Changzhi\dnplayer-tw\\"
     Ck_Path = "chk_imgs"
-    obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, LD_Path=LD_Path)
+    Emulator = "雷電模擬器"
+    #Emulator = "BlueStacks"
+    #obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator, LD_Path=LD_Path)
+    obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator)
 
-    obj.Click_System_Btn('PlayerState')
+    #obj.Click_System_Btn('PlayerState')
+    obj.autoDiary()
