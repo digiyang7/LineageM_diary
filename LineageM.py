@@ -116,7 +116,7 @@ if __name__ == '__main__':
     # Device_Name = "emulator-5554"
     Screen_Size = [1280, 720]
     ADB_Path = "vmTool/dnplayer_tw/adb.exe"
-    LD_Path = r"C:\Program Files\BlueStacks\\"
+    LD_Path = r"D:\Changzhi\dnplayer-tw\\"
     Ck_Path = "chk_imgs"
     obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, LD_Path=LD_Path)
 
