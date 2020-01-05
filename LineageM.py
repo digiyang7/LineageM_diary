@@ -1,6 +1,8 @@
 import os
 import time
-import win32gui
+
+from PIL import Image
+import imagehash
 
 import adb
 
@@ -11,8 +13,10 @@ class LM:
         self.ADB = adb.ADB(Device_Name=Device_Name, Screen_Size=Screen_Size, ADB_Path=ADB_Path, Emulator=Emulator)
 
         # 初始化按鈕位置
+        self.SaveImgSize = ""
         self.Btn_Map = {}
         self.Btn_init(Screen_Size)  # 依畫面大小設定座標點
+
 
         # 初始化圖片位置
         self.Sample_Image = dict()
@@ -32,6 +36,7 @@ class LM:
     def Btn_init(self, sz):
         print("sz:", sz)
         if str(sz) == "[960, 540]":
+            self.SaveImgSize = "960x540"
             # 初始介面 -
             self.Btn_Map['PlayerState'] = [35, 25]  # 等級
             self.Btn_Map['Item_Box'] = [755, 30]  # 背包
@@ -50,9 +55,11 @@ class LM:
 
             # 背包介面
             # 日記本介面
-            # 介面確認截取 - 設定左上角 與 右下角坐標
+            # 介面截取 - 設定左上角 與 右下角坐標
+            self.Btn_Map['Potion_Red'] = [230, 40, 268, 57]  # 左上紅水位置(截取圖形範圍38x17)
 
         elif str(sz) == "[1280, 720]":
+            self.SaveImgSize = "1280x720"
             # 初始介面
             self.Btn_Map['PlayerState'] = [45, 30]  # 等級
             self.Btn_Map['Item_Box'] = [0, 0]  # 背包
@@ -72,6 +79,7 @@ class LM:
             # 背包介面
             # 日記本介面
             # 介面確認截取
+            self.Btn_Map['Potion_Red'] = [0, 0, 0, 0]  # 左上紅水位置
 
     # Path : 存放範例圖片的路徑
     # 將Path下所有樣本圖片(最後結果圖) 全部儲存在 Sample_Image[]內
@@ -92,6 +100,39 @@ class LM:
             return 0
         click_loc = self.Btn_Map[name]
         self.ADB.Touch(click_loc[0], click_loc[1], name)
+
+    # 圖像範圍
+    def Intercept_ImgScop(self, BtnMapName):
+        loc = self.Btn_Map[BtnMapName]
+        return self.ADB.ScreenHot.crop(loc)  # 截取圖像範圍
+    # 截取樣本圖(Size_BtnMapName.png) => 初始化時把需要的樣本圖透過UI介面截取
+    def Intercept_Img(self, BtnMapName):
+        img = self.Intercept_ImgScop(BtnMapName)
+        img.save(Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '.png')
+        print("完成檔名 %s 的截圖:" % (self.SaveImgSize + "_" + BtnMapName + '.png'))
+    # 比對: 樣本圖(Size_BtnMapName.png) VS 目前圖像(Size_BtnMapName_Has.png
+    def Chk_Imgs_Exist(self, BtnMapName):
+        img = self.Intercept_ImgScop(BtnMapName)
+        img.save(Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png')
+        result = self.Image_CMP(BtnMapName, img)
+        if result == 0:
+            return 0
+        else:
+            return 1
+    # 靜態圖像比對 =>  return 0:圖像無差異 1:圖像有差異
+    def Image_CMP(self, BtnMapName, HasImgName):
+        # 載入範例圖像
+        SampleImgName = self.SaveImgSize + "_" + BtnMapName
+        print("圖像比對 樣本: %s VS %s" % (SampleImgName, HasImgName))
+        Sample_img = Image.open(self.Sample_Image[SampleImgName])
+
+        Sample_hash = imagehash.phash(Sample_img)
+        Has_hash = imagehash.phash(HasImgName)
+        Point = Sample_hash - Has_hash
+        # print("Sample_hash:", Sample_hash)
+        # print("Has_hash:", Has_hash)
+        # print(Point)
+        return Point
 
     # 自動轉日記本
     def autoDiary(self):
@@ -116,5 +157,15 @@ if __name__ == '__main__':
     #obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator, LD_Path=LD_Path)
     obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator)
 
+    # ======================TEST Function=====================
     #obj.Click_System_Btn('PlayerState')
-    obj.autoDiary()
+    #obj.autoDiary()
+
+    # 靜態圖像比對流程 => 1.先載取樣本圖 2.比對 樣本圖 和 目前圖像
+    # 1.載取樣本圖
+    # obj.Intercept_Img('Potion_Red')
+    # 2.樣本圖 VS 目前圖像 做比對
+    # res = obj.Chk_Imgs_Exist('Potion_Red')
+    # print(res)
+
+
