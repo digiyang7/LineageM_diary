@@ -7,6 +7,8 @@ from PIL import ImageGrab
 from PIL import Image
 from threading import Thread
 
+import cv2
+import numpy as np
 
 class ADB:
     #def __init__(self, Device_Name, Screen_Size, ADB_Path, Emulator, LD_Path):
@@ -36,12 +38,16 @@ class ADB:
     # 載取整個遊戲畫面  => Emu_Index(模擬器索引) ,  file_name(載圖存檔的檔案名稱)
     def Keep_Game_ScreenHot_fn(self, Emu_Index, file_name):
         self.Hwnd = self.Get_Self_Hawd(Emu_Index)
-        print("hwnd:", self.Hwnd)
+        #print("hwnd:", self.Hwnd)
         # 持續執行 => 需加個delay 才不會卡住
         while 1:
             self.window_capture(hwnd=self.Hwnd, filename=file_name)
             #self.windowCapture(hwnd=self.Hwnd, filename=file_name)
             time.sleep(2)
+
+    def Keep_Game_ScreenDiary_fn(self, Emu_Index, file_name):
+        self.Hwnd = self.Get_Self_Hawd(Emu_Index)
+        self.window_capture(hwnd=self.Hwnd, filename=file_name)
 
     def checkWindow(self, hwnd, mouse):
         # 去掉下面這句就所有都輸出了，但是我不需要那麼多
@@ -91,8 +97,10 @@ class ADB:
     # 事前準備1 => 需安裝pywin32 => 使用win32gui
     # 事前準備2 => 需安裝PIL => 使用ImageGrab和Image => import => from PIL import ImageGrab , from PIL import Image
     def window_capture(self, hwnd, filename):
+        #win32gui.SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_SHOWWINDOW)
+        #win32gui.SetForegroundWindow(hwnd)
         game_rect = win32gui.GetWindowRect(int(hwnd))
-        # print(game_rect)
+        #print(game_rect)
         src_image = ImageGrab.grab(game_rect)
         src_image = src_image.resize(self.Screen_Size, Image.ANTIALIAS)
         src_image.save(filename)
@@ -111,9 +119,9 @@ class ADB:
         saveBitMap = win32ui.CreateBitmap()
         # 獲取監控器資訊
         MoniterDev = win32api.EnumDisplayMonitors(None, None)
-        w = MoniterDev[0][2][2]
-        h = MoniterDev[0][2][3]
-        # print(w, h)  #圖片大小
+        w = MoniterDev[0][2][2]  # 截圖區域
+        h = MoniterDev[0][2][3]  # 截圖區域
+        #print(w, h)  #圖片大小
         # 為bitmap開闢空間
         saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
         # 高度saveDC，將截圖儲存到saveBitmap中
@@ -133,7 +141,7 @@ class ADB:
         self.adb_call(device_name, ['shell', 'input', 'tap', x, y], name)
     # 執行ADB指令
     def adb_call(self, device_name, detail_list, name):
-        print("-----adb commend start-----")
+        #print("-----adb commend start-----")
         command = [self.ADB_Path, '-s', device_name]
         for order in detail_list:
             command.append(order)
@@ -141,7 +149,7 @@ class ADB:
         print("正在進行 %s 命令。" % name)
         p = subprocess.Popen(command)
         p.communicate()  # 等待外部程序執行結束
-        print("-----adb commend end-----")
+        #print("-----adb commend end-----")
 
 if __name__ == '__main__':
     Device_Name = "127.0.0.1:5555"
@@ -166,8 +174,9 @@ if __name__ == '__main__':
     # 取得模擬器資訊內的hawd => 載取整個遊戲畫面
     #hawd = obj.Get_Self_Hawd(0)
     #print(hawd)
-    #obj.window_capture(hawd, 'chk_imgs/test_other.png')
     #obj.window_capture(hawd, 'chk_imgs/test.png')
+    #obj.windowCapture(hawd, 'chk_imgs/test_other.png')
+
 
     # 點擊遊戲畫面
     #obj.Touch(35, 25, "點擊人物等級")
