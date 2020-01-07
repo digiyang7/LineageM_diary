@@ -191,12 +191,12 @@ class LM:
     # 確認日記本 - 最左方格子
     def Check_DiaryFarLeft(self, BtnMapName):
         img = self.Intercept_ImgScop(BtnMapName)
-        img.save(Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png')
+        img.save(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png')
         time.sleep(0.5)
         # 日服-960*540-240dpi
         mask_lower = np.array([0, 0, 4])
         mask_upper = np.array([255, 255, 255])
-        return self.Image_MaskLU(Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png',
+        return self.Image_MaskLU(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png',
                                  mask_lower, mask_upper)
 
     # 自動轉日記本
@@ -205,11 +205,11 @@ class LM:
         while 1:
             conunt += 1
             print("轉第%d次" % conunt)
-            obj.Click_System_Btn('Diary_ChangeItem')
+            self.Click_System_Btn('Diary_ChangeItem')
             time.sleep(1)  # 100變更點完等待1秒在截圖
             self.ADB.Keep_Game_ScreenDiary_fn(Emu_Index=0, file_name=self.Ck_Path + '/test.png')
-            v = obj.Check_DiaryFarLeft('DiaryFarLeft')
-            print("v值=%d:" % v)
+            v = self.Check_DiaryFarLeft('DiaryFarLeft')
+            #print("v值=%d:" % v)
             if v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal:
                 print("轉到祝武 祝防....")
                 break
@@ -223,7 +223,7 @@ class LM:
             print("轉第%d次" % conunt)
             time.sleep(1)
             self.ADB.Keep_Game_ScreenDiary_fn(Emu_Index=0, file_name=self.Ck_Path + '/test.png')
-            v = obj.Check_DiaryFarLeft('DiaryFarLeft')
+            v = self.Check_DiaryFarLeft('DiaryFarLeft')
             print("v值=%d:" % v)
             time.sleep(1)
 
@@ -240,6 +240,7 @@ if __name__ == '__main__':
     Ck_Path = "chk_imgs"
     Emulator = "雷電模擬器"
     #Emulator = "BlueStacks"
+    #Emulator = "夜神"
     #obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator, LD_Path=LD_Path)
     obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator)
 
@@ -262,12 +263,11 @@ if __name__ == '__main__':
 
     #obj.Check_DiaryFarLeft('DiaryFarLeft')
 
+    # 測試Diary MaskData
+    # obj.DiaryMaskData()
+
     # 自動轉日記本
     #obj.autoDiary()
-
-    # 測試Diary MaskData
-    obj.DiaryMaskData()
-
 
 
 

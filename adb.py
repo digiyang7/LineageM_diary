@@ -146,7 +146,7 @@ class ADB:
         for order in detail_list:
             command.append(order)
         #print(command)
-        print("正在進行 %s 命令。" % name)
+        #print("正在進行 %s 命令。" % name)
         p = subprocess.Popen(command)
         p.communicate()  # 等待外部程序執行結束
         #print("-----adb commend end-----")
