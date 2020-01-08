@@ -1,7 +1,9 @@
 import os
 import time
+import win32gui
 
-from PIL import Image
+from threading import Thread
+from PIL import Image, ImageGrab
 import imagehash
 import cv2
 import numpy as np
@@ -9,11 +11,12 @@ import numpy as np
 import adb
 
 class LM:
-    #def __init__(self, Device_Name, Screen_Size, Ck_Path, ADB_Path, Emulator, LD_Path):
-    def __init__(self, Device_Name, Screen_Size, Ck_Path, ADB_Path, Emulator):
+    def __init__(self, Device_Name, Screen_Size, Ck_Path, ADB_Path, Hwnd):
         # 初始化ADB物件
-        self.ADB = adb.ADB(Device_Name=Device_Name, Screen_Size=Screen_Size, ADB_Path=ADB_Path, Emulator=Emulator)
+        #self.ADB = adb.ADB(Device_Name=Device_Name, Screen_Size=Screen_Size, ADB_Path=ADB_Path, Emulator=Emulator)
+        self.ADB = adb.ADB(Device_Name=Device_Name, ADB_Path=ADB_Path)
         self.Ck_Path = Ck_Path
+        self.Screen_Size = Screen_Size
 
         # 初始化按鈕位置 & 各項初始值
         self.SaveImgSize = ""
@@ -26,8 +29,10 @@ class LM:
         # 初始化圖片位置
         self.Sample_Image = dict()
         self.Import_Sample_Image(Ck_Path)  # 導入所有樣本圖片檔(最後結果圖) => 並儲存到self.Sample_Image變數
+        self.ScreenHot = None  # 預設截圖為None
+        self.Hwnd = Hwnd
 
-        # 起動執行載圖動作的執行緒(呼叫ADB截圖函式)
+        # 起動執行載圖動作的執行緒
         #self.ADB.Keep_Game_ScreenHot(Emu_Index=0, file_name=Ck_Path+'/test.png')
 
         # 若截圖未處理完則進行等待
@@ -127,16 +132,16 @@ class LM:
     # 圖像範圍
     def Intercept_ImgScop(self, BtnMapName):
         loc = self.Btn_Map[BtnMapName]
-        return self.ADB.ScreenHot.crop(loc)  # 截取圖像範圍
+        return self.ScreenHot.crop(loc)  # 截取圖像範圍
     # 截取樣本圖(Size_BtnMapName.png) => 初始化時把需要的樣本圖透過UI介面截取
     def Intercept_Img(self, BtnMapName):
         img = self.Intercept_ImgScop(BtnMapName)
-        img.save(Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '.png')
+        img.save(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '.png')
         print("完成檔名 %s 的截圖:" % (self.SaveImgSize + "_" + BtnMapName + '.png'))
     # 比對: 樣本圖(Size_BtnMapName.png) VS 目前圖像(Size_BtnMapName_Has.png
     def Chk_Imgs_Exist(self, BtnMapName):
         img = self.Intercept_ImgScop(BtnMapName)
-        img.save(Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png')
+        img.save(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png')
         result = self.Image_CMP(BtnMapName, img)
         if result == 0:
             return 0
@@ -186,6 +191,63 @@ class LM:
                 k += 1
         return k
 
+    # 載圖
+    def Keep_Game_ScreenDiary_fn(self, Hwnd, file_name):
+        self.window_capture(hwnd=Hwnd, filename=file_name)
+
+    # 建立一個執行緒(流水線)
+    # 每經過一段時間 => 載取整個遊戲畫面 => 此動作指派給一個執行緒去做
+    def Keep_Game_ScreenHot(self, Hwnd, file_name):
+        # target = 執行載取畫面的函數
+        th = Thread(target=self.Keep_Game_ScreenHot_fn, args=[Hwnd, file_name])
+        th.start()
+
+    # 載取整個遊戲畫面  => Emu_Index(模擬器索引) ,  file_name(載圖存檔的檔案名稱)
+    def Keep_Game_ScreenHot_fn(self, Hwnd, file_name):
+        # print("hwnd:", self.Hwnd)
+        # 持續執行 => 需加個delay 才不會卡住
+        while 1:
+            self.window_capture(hwnd=Hwnd, filename=file_name)
+            # self.windowCapture(hwnd=self.Hwnd, filename=file_name)
+            time.sleep(2)
+
+    # 載取遊戲畫面1
+    #     # 事前準備1 => 需安裝pywin32 => 使用win32gui
+    #     # 事前準備2 => 需安裝PIL => 使用ImageGrab和Image => import => from PIL import ImageGrab , from PIL import Image
+    def window_capture(self, hwnd, filename):
+        game_rect = win32gui.GetWindowRect(int(hwnd))
+        # print(game_rect)
+        src_image = ImageGrab.grab(game_rect)
+        src_image = src_image.resize(self.Screen_Size, Image.ANTIALIAS)
+        src_image.save(filename)
+        # 將截圖畫面存到adb物件本身的ScreenHot屬性
+        self.ScreenHot = src_image
+        # print(type(src_image))
+    # 載取遊戲畫面2
+    # def windowCapture(self, hwnd, filename):
+    # 根據視窗控制代碼獲取視窗的裝置上下文DC（Divice Context）
+    # hwndDC = win32gui.GetWindowDC(hwnd)
+    # 根據視窗的DC獲取mfcDC
+    # mfcDC = win32ui.CreateDCFromHandle(hwndDC)
+    # mfcDC建立可相容的DC
+    # saveDC = mfcDC.CreateCompatibleDC()
+    # 建立bigmap準備儲存圖片
+    # saveBitMap = win32ui.CreateBitmap()
+    # 獲取監控器資訊
+    # MoniterDev = win32api.EnumDisplayMonitors(None, None)
+    # w = MoniterDev[0][2][2]  # 截圖區域
+    # h = MoniterDev[0][2][3]  # 截圖區域
+    # print(w, h)  #圖片大小
+    # 為bitmap開闢空間
+    # saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+    # 高度saveDC，將截圖儲存到saveBitmap中
+    # saveDC.SelectObject(saveBitMap)
+    # 擷取從左上角（0，0）長寬為（w，h）的圖片
+    # saveDC.BitBlt((0, 0), (w, h), mfcDC, (0, 0), win32con.SRCCOPY)
+    # saveBitMap.SaveBitmapFile(saveDC, filename)
+    # 將截圖畫面存到adb物件本身的ScreenHot屬性
+    # self.ScreenHot = saveDC
+
     # ============================================天堂M 圖像確認========================================================
     # weapon:武器, Armor:防具, 紙:paper wish:祝
     # 確認日記本 - 最左方格子
@@ -207,7 +269,7 @@ class LM:
             print("轉第%d次" % conunt)
             self.Click_System_Btn('Diary_ChangeItem')
             time.sleep(1)  # 100變更點完等待1秒在截圖
-            self.ADB.Keep_Game_ScreenDiary_fn(Emu_Index=0, file_name=self.Ck_Path + '/test.png')
+            self.Keep_Game_ScreenDiary_fn(Hwnd=self.Hwnd, file_name=self.Ck_Path + '/test.png')
             v = self.Check_DiaryFarLeft('DiaryFarLeft')
             #print("v值=%d:" % v)
             if v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal:
@@ -222,10 +284,11 @@ class LM:
             conunt += 1
             print("轉第%d次" % conunt)
             time.sleep(1)
-            self.ADB.Keep_Game_ScreenDiary_fn(Emu_Index=0, file_name=self.Ck_Path + '/test.png')
+            self.Keep_Game_ScreenDiary_fn(Hwnd=self.Hwnd, file_name=self.Ck_Path + '/test.png')
             v = self.Check_DiaryFarLeft('DiaryFarLeft')
             print("v值=%d:" % v)
             time.sleep(1)
+
 
 if __name__ == '__main__':
     # obj = LM(Device_Name="emulator-5554", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img")
