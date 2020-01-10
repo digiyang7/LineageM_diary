@@ -89,7 +89,7 @@ class Main():
             while f:
                 f = 0
                 try:
-                    Screen_Size = int(input("請選擇模擬器畫面尺寸(0:[960,540] 1:[1280,720] -1:跳出)  "))
+                    Screen_Size = int(input("請選擇模擬器畫面尺寸(0:[1280,720] 1:[960,540] -1:跳出)  "))
                     if Screen_Size < -1 or Screen_Size > 1:
                         f = 1
                         print("不在選擇範圍內, 請重新輸入")
@@ -97,10 +97,10 @@ class Main():
                     f = 1
                     print("輸入錯誤, 請重新輸入")
             if Screen_Size >= 0 and Screen_Size <= 1:
-                self.Screen_Size = [960, 540] if Screen_Size == 0 else [1280, 720]
+                self.Screen_Size = [1280, 720] if Screen_Size == 0 else [960, 540]
             elif Screen_Size == -1:
                 print("Bye~")
-                break;
+                break
 
             # 模擬器設定值 確認
             f = 1
@@ -124,9 +124,9 @@ class Main():
                 print("Bye~")
                 break
 
-    # 取得模擬器索引編號
+    # 取得模擬器 Hwnd
     def getEmulatorHwnd(self, Emulator):
-        print("正在取得模擬器 Hawd....")
+        print("正在取得模擬器 Hwnd....")
         return self.Emu.Get_Self_Hawd(Emulator, 0)
 
     # 取得所有視窗
@@ -160,13 +160,12 @@ class Main():
             #Device_Name, Screen_Size, Ck_Path, ADB_Path, Hwnd
             obj = LineageM.LM(Device_Name=self.Device_Name, Screen_Size=self.Screen_Size, Ck_Path=self.Ck_Path,
                               ADB_Path=self.ADB_Path, Hwnd=self.Emulator_Hwnd)
-            while 1:
-                obj.autoDiary()
-                #obj.DiaryMaskData()
+
+            obj.autoDiary()
+            #obj.DiaryMaskData()
 
 if __name__ == '__main__':
     m = Main()
     m.AutoStart()
-
 
     #m.get_AllDeviceName()

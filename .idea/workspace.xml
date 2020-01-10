@@ -16,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="105" column="17" lean-forward="true" selection-start-line="105" selection-start-column="17" selection-end-line="105" selection-end-column="17" />
+            <state relative-caret-position="-65">
+              <caret line="145" column="23" lean-forward="true" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -26,28 +26,14 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Emulator.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" column="33" selection-start-line="9" selection-start-column="33" selection-end-line="9" selection-end-column="33" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/LineageM.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="57">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/adb.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="7" column="32" selection-start-line="7" selection-start-column="32" selection-end-line="7" selection-end-column="32" />
+            <state relative-caret-position="443">
+              <caret line="300" column="21" selection-start-line="300" selection-start-column="21" selection-end-line="300" selection-end-column="21" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#1424#3276#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -64,13 +50,14 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>vmtype</find>
-      <find>ScreenHot</find>
       <find>Screen_Size</find>
       <find>Device_Name</find>
       <find>Ck_Path</find>
       <find>ADB_Path</find>
       <find>Hwnd</find>
       <find>Keep_Game_ScreenHot</find>
+      <find>ScreenHot</find>
+      <find>Keep_Game_ScreenDiary_fn</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -92,14 +79,14 @@
         <option value="$PROJECT_DIR$/hello.py" />
         <option value="$PROJECT_DIR$/adb.py" />
         <option value="$PROJECT_DIR$/Emulator.py" />
-        <option value="$PROJECT_DIR$/LineageM.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/LineageM.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="25" />
-    <option name="y" value="23" />
+    <option name="x" value="100" />
+    <option name="y" value="56" />
     <option name="width" value="1137" />
     <option name="height" value="928" />
   </component>
@@ -115,6 +102,11 @@
             <path>
               <item name="LineageM_diary" type="b2602c69:ProjectViewProjectNode" />
               <item name="LineageM_diary" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LineageM_diary" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LineageM_diary" type="462c0819:PsiDirectoryNode" />
+              <item name="chk_imgs" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="LineageM_diary" type="b2602c69:ProjectViewProjectNode" />
@@ -137,7 +129,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../LineageM" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/chk_imgs" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -150,13 +142,14 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\PycharmProjects\LineageM_diary\chk_imgs" />
       <recent name="D:\PycharmProjects\LineageM_diary" />
       <recent name="D:\PycharmProjects\LineageM_diary\Module" />
       <recent name="D:\PycharmProjects\LineageM_diary\Control" />
       <recent name="D:\PycharmProjects\LineageM_diary\UI" />
-      <recent name="D:\PycharmProjects\LineageM_diary\vmToole\dnplayer_tw" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\PycharmProjects\LineageM_diary\chk_imgs" />
       <recent name="D:\PycharmProjects\LineageM_diary" />
       <recent name="D:\PycharmProjects\LineageM_diary\vmToole" />
     </key>
@@ -246,10 +239,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="25" y="23" width="1137" height="928" extended-state="0" />
-    <editor active="true" />
+    <frame x="100" y="56" width="1137" height="928" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4984227" visible="true" weight="0.21747042" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4984227" visible="true" weight="0.35031846" />
       <window_info id="Structure" order="1" sideWeight="0.50157726" side_tool="true" weight="0.22296843" />
       <window_info id="Favorites" order="2" sideWeight="0.50157726" side_tool="true" weight="0.22296843" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -299,12 +291,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/960x540_Potion_Red.png" />
-    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_Potion_Red.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chk_imgs/wc_test.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/chk_imgs/test_other.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -312,18 +298,8 @@
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_WishPaper.png" />
-    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_WishPaper_Has.png" />
     <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_NormalPaper_Has.png" />
     <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_CursePaper_Has.png" />
-    <entry file="file://$PROJECT_DIR$/Source.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Res.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mask.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/helloworld.spec" />
     <entry file="file://$PROJECT_DIR$/config.ini">
       <provider selected="true" editor-type-id="text-editor">
@@ -370,17 +346,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dist/chk_imgs/test.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/wc_test.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/test_armor_wish.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_Wish_Weapon_Has.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/960x540_DiaryFarLeft_WishPaper_Has.png" />
+    <entry file="file://$PROJECT_DIR$/chk_imgs960x540_DiaryFarLeft_WishPaper_Has.png" />
+    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_WishPaper_Has.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_WishPaper_Weapon_Has.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/Emulator.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
           <caret line="9" column="33" selection-start-line="9" selection-start-column="33" selection-end-line="9" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LineageM.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
         </state>
       </provider>
     </entry>
@@ -391,25 +380,54 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_Has.png">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/Main.spec">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/chk_imgs/1280x720_DiaryFarLeft_Has.png">
+    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_Potion_Red.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_Potion_Red_Has.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/dist/chk_imgs/test.png">
+    <entry file="file://$PROJECT_DIR$/chk_imgs/1280x720_DiaryFarLeft_Has.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_Weapon_Has.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/960x540_DiaryFarLeft_Has.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chk_imgs/1280x720_DiaryFarLeft_Weapon_Has.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/chk_imgs/test.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/Mask.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Source.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Res.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LineageM.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="443">
+          <caret line="300" column="21" selection-start-line="300" selection-start-column="21" selection-end-line="300" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#1424#3276#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="105" column="17" lean-forward="true" selection-start-line="105" selection-start-column="17" selection-end-line="105" selection-end-column="17" />
+        <state relative-caret-position="-65">
+          <caret line="145" column="23" lean-forward="true" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
           </folding>

@@ -47,7 +47,7 @@ class LM:
         print("sz:", sz)
         if str(sz) == "[960, 540]":  # 240dpi
             self.SaveImgSize = "960x540"
-            # 祝武:       祝防:1890 ~ 2762 咒武,咒防,other:3000 武捲：1774 防捲: 1774 3,4,5,6樓:1804 1樓:1774 2樓:1794
+            # 祝武: 1856~      祝防:1890~2762 咒武,咒防,other:3000 武捲：1774 防捲: 1774 3,4,5,6樓:1804 1樓:1774 2樓:1794
             self.DiaryFarLeft_MaskVal = [3000, 1774, 1794, 1804]
             self.DiaryFarLeft_MaskValLow = 1890
             self.DiaryFarLeft_MaskValUp = 2762
@@ -74,16 +74,19 @@ class LM:
             # 介面截取 - 設定左上角 與 右下角坐標
             self.Btn_Map['Potion_Red'] = [230, 40, 268, 57]  # 左上紅水位置(截取圖形範圍38x17)
             self.Btn_Map['DiaryFarLeft'] = [327, 269, 377, 299]  # 轉日記-最左方格子 (50*30)*2 = 3000
+            self.Btn_Map['DiaryFarLeft_Weapon'] = [335, 283, 338, 286]  # 轉日記 : 最左方格子 -> 祝福捲 -> 武捲 3x3
+
             #self.Btn_Map['DiaryFarLeft_NormalPaper'] = [207, 197, 257, 227]  # 交易所 - 一般捲 (50*30)*2 = 3000
             #self.Btn_Map['DiaryFarLeft_WishPaper'] = [207, 269, 257, 299]  # 交易所 - 祝福捲
+            #self.Btn_Map['DiaryFarLeft_WishPaper_Weapon'] = [218, 282, 221, 283]  # 交易所 - 祝福捲 -> 武捲
             #self.Btn_Map['DiaryFarLeft_CursePaper'] = [207, 341, 257, 371]  # 交易所 - 咒咀捲
 
         elif str(sz) == "[1280, 720]":
             self.SaveImgSize = "1280x720"
-            # 祝武:3366 ~ 4674 祝防: 咒武,咒防,other:5280 武捲：3212 防捲:3212 1樓:3212 2樓:3240 3樓:3248 4樓:3250 5樓:3252 6樓:3254
+            # 祝武:3366 ~ 4674 祝防:3422~4900 咒武,咒防,other:5280 武捲：3212 防捲:3212 1樓:3212 2樓:3240 3樓:3248 4樓:3250 5樓:3252 6樓:3254
             self.DiaryFarLeft_MaskVal = [5280, 3212, 3240, 3248, 3250, 3252, 3254]
             self.DiaryFarLeft_MaskValLow = 3366
-            self.DiaryFarLeft_MaskValUp = 4674
+            self.DiaryFarLeft_MaskValUp = 4900
             # 初始介面
             self.Btn_Map['PlayerState'] = [45, 30]  # 等級
             self.Btn_Map['Item_Box'] = [0, 0]  # 背包
@@ -107,6 +110,7 @@ class LM:
             # 介面截取坐標 - 設定左上角 與 右下角坐標
             self.Btn_Map['Potion_Red'] = [0, 0, 0, 0]  # 左上紅水位置
             self.Btn_Map['DiaryFarLeft'] = [436, 358, 502, 398]  # 轉日記-最左方格子 (66*40)*2 = 5280
+            self.Btn_Map['DiaryFarLeft_Weapon'] = [464, 364, 467, 367]  # 轉日記 : 最左方格子 -> 祝福捲 -> 武捲
 
     # Path : 存放範例圖片的路徑
     # 將Path下所有樣本圖片(最後結果圖) 全部儲存在 Sample_Image[]內
@@ -165,18 +169,18 @@ class LM:
     def Image_MaskLU(self, source_img, mask_lower, mask_upper):
         cv2_Image = cv2.imread(source_img)
         hsvimg = cv2.cvtColor(cv2_Image, cv2.COLOR_BGR2HSV)
-        #print(hsvimg)  # 看一下轉成HSV的值落在那些範圍,以方便做MASK時提取依據
+        #print("hswing is :", hsvimg)  # 看一下轉成HSV的值落在那些範圍,以方便做MASK時提取依據
         # cv2.imshow("Source", hsvimg)
-        #cv2.imwrite('Source.png', hsvimg)
+        # cv2.imwrite('Source.png', hsvimg)
         # mask是把HSV圖片中在顏色範圍內的區域變成白色(255,255,255)，其他區域變成黑色(0,0,0)
         # mask_lower = np.array([0, 0, 4])
         # mask_upper = np.array([255, 255, 255])
         mask = cv2.inRange(hsvimg, mask_lower, mask_upper)
-        # cv2.imshow("Mask", mask)
-        #cv2.imwrite('Mask.png', mask)
-        res = cv2.bitwise_and(cv2_Image, cv2_Image, mask=mask)
+        #cv2.imshow("Mask", mask)
+        # cv2.imwrite('Mask.png', mask)
+        # res = cv2.bitwise_and(cv2_Image, cv2_Image, mask=mask)
         # cv2.imshow("Res", res)
-        #cv2.imwrite('Res.png', res)
+        # cv2.imwrite('Res.png', res)
         # 找出某一點的數量
         pointCount = self.Get_Array_Num_Count(mask, 255)  # 找出白色區域(255)有多少個點
         #print("共找到%d個你所需要的點" % pointCount)
@@ -249,7 +253,7 @@ class LM:
     # self.ScreenHot = saveDC
 
     # ============================================天堂M 圖像確認========================================================
-    # weapon:武器, Armor:防具, 紙:paper wish:祝
+    # weapon:武器, armor:防具, 紙:paper wish:祝
     # 確認日記本 - 最左方格子
     def Check_DiaryFarLeft(self, BtnMapName):
         img = self.Intercept_ImgScop(BtnMapName)
@@ -258,6 +262,18 @@ class LM:
         # 日服-960*540-240dpi
         mask_lower = np.array([0, 0, 4])
         mask_upper = np.array([255, 255, 255])
+        return self.Image_MaskLU(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png',
+                                 mask_lower, mask_upper)
+    # 祝福捲情況下 => 找出武捲與防捲的值
+    # 祝武15-80,30-160,70-199 maskval 100次試驗 => 0:1次   2~18: 99次
+    # 祝防0-40,0-100,200-255 maskval
+    def Check_DiaryFarLeft_Weapon(self, BtnMapName):
+        img = self.Intercept_ImgScop(BtnMapName)
+        img.save(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png')
+        time.sleep(0.5)
+        # 日服-960*540-240dpi
+        mask_lower = np.array([0, 0, 70])
+        mask_upper = np.array([255, 255, 199])
         return self.Image_MaskLU(self.Ck_Path + '/' + self.SaveImgSize + "_" + BtnMapName + '_Has.png',
                                  mask_lower, mask_upper)
 
@@ -271,9 +287,17 @@ class LM:
             time.sleep(1)  # 100變更點完等待1秒在截圖
             self.Keep_Game_ScreenDiary_fn(Hwnd=self.Hwnd, file_name=self.Ck_Path + '/test.png')
             v = self.Check_DiaryFarLeft('DiaryFarLeft')
-            #print("v值=%d:" % v)
-            if v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal:
-                print("轉到祝武 祝防....")
+            c = self.Check_DiaryFarLeft_Weapon('DiaryFarLeft_Weapon')  # 祝武 c != 0
+            print("v值=%d , c值=%d:" % (v, c))
+            #if v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal and c > 0:
+            if v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal and c == 0:
+                print("轉到..祝防(目前1280x720:10%機率, 960x540:1%機率 可能誤判為祝武)......")
+                break
+            elif v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal and c != 0:
+                print("轉到..祝武")
+                break
+            elif v >= self.DiaryFarLeft_MaskValLow and v <= self.DiaryFarLeft_MaskValUp and v not in self.DiaryFarLeft_MaskVal:
+                print("轉到..祝福捲")
                 break
             time.sleep(1)
 
@@ -286,26 +310,22 @@ class LM:
             time.sleep(1)
             self.Keep_Game_ScreenDiary_fn(Hwnd=self.Hwnd, file_name=self.Ck_Path + '/test.png')
             v = self.Check_DiaryFarLeft('DiaryFarLeft')
-            print("v值=%d:" % v)
+            c = self.Check_DiaryFarLeft_Weapon('DiaryFarLeft_Weapon')  # 祝武 c != 0
+            print("v值=%d , c值=%d:" % (v, c))
             time.sleep(1)
 
 
 if __name__ == '__main__':
-    # obj = LM(Device_Name="emulator-5554", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img")
-    # obj = LM(Device_Name="127.0.0.1:5555", Screen_Size=[960, 540], Sample_Path="../Data/Sample_img", ADB_Path="xx", LD_Path="xx")
-
     Device_Name = "127.0.0.1:5555"
     #Device_Name = "emulator-5554"
     Screen_Size = [960, 540]
-    #Screen_Size = [1280, 720]
+    Screen_Size = [1280, 720]
     ADB_Path = "vmTool/dnplayer_tw/adb.exe"
-    #LD_Path = r"D:\Changzhi\dnplayer-tw\\"
     Ck_Path = "chk_imgs"
     Emulator = "雷電模擬器"
-    #Emulator = "BlueStacks"
-    #Emulator = "夜神"
-    #obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator, LD_Path=LD_Path)
-    obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Emulator=Emulator)
+    Emulator_Hwnd = 5047226
+    Emulator_Hwnd = 281544494
+    obj = LM(Device_Name=Device_Name, Screen_Size=Screen_Size, Ck_Path=Ck_Path, ADB_Path=ADB_Path, Hwnd=Emulator_Hwnd)
 
     # ======================TEST Function=====================
     #obj.Click_System_Btn('PlayerState')
@@ -327,10 +347,20 @@ if __name__ == '__main__':
     #obj.Check_DiaryFarLeft('DiaryFarLeft')
 
     # 測試Diary MaskData
-    # obj.DiaryMaskData()
+    #obj.DiaryMaskData()
 
     # 自動轉日記本
-    #obj.autoDiary()
+    obj.autoDiary()
+
+    # 交易所 武防
+    #obj.Keep_Game_ScreenDiary_fn(Emulator_Hwnd, Ck_Path + "/960x540_DiaryFarLeft_WishPaper_Has.png")
+    #v = obj.Check_DiaryFarLeft_Weapon('DiaryFarLeft_WishPaper_Weapon')
+    #print("v is ", v)
+
+    # 日記本
+    # obj.Keep_Game_ScreenDiary_fn(Emulator_Hwnd, Ck_Path + "/960x540_DiaryFarLeft_Weapon_Has.png")
+    # obj.Check_DiaryFarLeft_Weapon('DiaryFarLeft_Weapon')
+
 
 
 
